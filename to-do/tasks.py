@@ -1,4 +1,5 @@
 import json
+import datetime
 
 class TaskHandler:
 
@@ -13,44 +14,47 @@ class TaskHandler:
 				return tasks
 			except FileNotFoundError: #no tasks found return empty list
 				return {"tasks": []}
+			except json.JSONDecodeError:
+				return {"tasks": []} 
 
 	def save_file(self):
 		with open('data/tasks.json', 'w')as json_file: #saving data
 				json.dump(self.tasks, json_file, indent = 1)
 				
-	def add_tasks(self):#adding of new tasks
+	def add_task(self):#adding of new tasks
 		name = input("Enter task name: ")
 		due_date = input("YYYY-MM-DD: ")
 		priority = input("priority (High/Medium/Low): ")
 		self.view_tasks()
 		new_task = {
-			"new_name" : "name",
-			"new_due_date" : "due_date",
-			"new_priority" : "priority",
-			"Done": "False"
+			"name": name,  # Use the correct key names
+			"due_date": due_date,
+			"priority": priority,
+			"Done": False
 		}
 		self.tasks["tasks"].append(new_task)
 		print("Task added")
 
-	def view_tasks(self, priority=None, due_date=None):
+	def view_tasks(self, priority=None, month=None):
 		if not self.tasks["tasks"]:
-			print("No task added yet.")
+			print("No tasks added yet.")
 		else:
 			print("Tasks:")
-		filtered = self.tasks["tasks"]
-
-		if priority:
-			filtered = [task for task in filtered if task.get('priority') == priority]
-		
-		if due_date:
-			filtered = [task for task in filtered if task.get('due_date') == due_date]
-		
-		if not filtered:
-			print("No matching found.")
-		else:
-			for i, task in enumerate(filtered, start = 1):
-				print(f"{i}. {task}")
-
+			filtered = self.tasks["tasks"]
+			
+			if priority:
+				filtered = [task for task in filtered if task.get('priority') == priority]
+			if month:
+                # Extract month from the due date and compare with the specified month
+				filtered = [task for task in filtered if datetime.datetime.strptime(task.get('due_date'), "%Y-%m-%d").month == month]
+				
+			if not filtered:
+				print("No tasks found.")
+			else:
+				for i, task in enumerate(filtered, start=1):
+					done_indicator = "✅" if task["Done"] else "❌"
+					print(f"{i}. {task['name']} (Due: {task['due_date']}, Priority: {task['priority']}, Done: {done_indicator})")
+	
 	def update_task(self, index_task):
 		if not self.tasks["tasks"]:
 			print("No tasks updated yet.")
@@ -66,6 +70,15 @@ class TaskHandler:
 			self.save_file()
 		else:
 			print("invalid index")
+
+	def mark_task_done(self, index_task):
+		if 1 <= index_task <= len(self.tasks["tasks"]):
+			self.tasks["tasks"][index_task - 1]["Done"] = True
+			print("Task marked as done.")
+			self.save_file()
+		else:
+			print("Invalid index")
+
 
 	def delete_task(self, index_task):
 		if not self.tasks["tasks"]:
