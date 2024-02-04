@@ -35,25 +35,21 @@ class TaskHandler:
 		self.tasks["tasks"].append(new_task)
 		print("Task added")
 
-	def view_tasks(self, priority=None, month=None):
+	def view_tasks(self, priority=None):
 		if not self.tasks["tasks"]:
 			print("No tasks added yet.")
 		else:
 			print("Tasks:")
 			filtered = self.tasks["tasks"]
-			
 			if priority:
 				filtered = [task for task in filtered if task.get('priority') == priority]
-			if month:
-                # Extract month from the due date and compare with the specified month
-				filtered = [task for task in filtered if datetime.datetime.strptime(task.get('due_date'), "%Y-%m-%d").month == month]
-				
 			if not filtered:
 				print("No tasks found.")
 			else:
 				for i, task in enumerate(filtered, start=1):
 					done_indicator = "✅" if task["Done"] else "❌"
 					print(f"{i}. {task['name']} (Due: {task['due_date']}, Priority: {task['priority']}, Done: {done_indicator})")
+
 	
 	def update_task(self, index_task):
 		if not self.tasks["tasks"]:

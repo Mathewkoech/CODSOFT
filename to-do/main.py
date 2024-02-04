@@ -1,6 +1,6 @@
 import json
 from tasks import TaskHandler
-import re
+
 def main():
     task_handler = TaskHandler()
 
@@ -41,17 +41,12 @@ def main():
         elif choice == "6":
             priority = input("Enter priority (High/Medium/Low): ").lower()
             valid_priorities = ["high", "medium", "low"]
+
             while priority not in valid_priorities:
-                   print("Invalid priority. Please enter High, Medium, or Low.")
-                   priority = input("Enter priority (High/Medium/Low): ").lower()
-                   
-            due_date_regex = r"^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$"
-            due_date = input("Enter due date (YYYY-MM-DD): ").lower()
-            while not re.match(due_date_regex, due_date):
-                 print("Invalid due date format. Please enter in YYYY-MM-DD format.")
-                 due_date = input("Enter due date (YYYY-MM-DD): ").lower()
-            print(due_date)
-            task_handler.view_tasks(priority=priority, due_date=due_date)
+                print("Invalid priority. Please enter High, Medium, or Low.")
+                priority = input("Enter priority (High/Medium/Low): ").lower()
+
+            task_handler.view_tasks(priority=priority)
         elif choice == "7":
             break
         else:
